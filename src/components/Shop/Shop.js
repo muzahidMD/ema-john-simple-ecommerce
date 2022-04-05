@@ -1,22 +1,32 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import useCart from '../../hooks/useCart';
+import useProducts from '../../hooks/useProducts';
+import { addToDb } from '../../utilities/fakedb';
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './shop.css'
 
 const Shop = () => {
-    const [products, setProducts] = useState([]);
-    const [cart, setCart] = useState([]);
+    const [products, setProduct] = useProducts();
+    const [cart, setCart] = useCart(products);
 
-    useEffect(() => {
-        fetch('products.json')
-            .then(res => res.json())
-            .then(data => setProducts(data))
-    }, [])
+    const handleAddToCart = (selectedProduct) => {
+        // console.log(selectedProduct);
+        let newCart = [];
+        const exists = cart.find(product => product.id === selectedProduct.id);
+        if (!exists) {
+            selectedProduct.quantity = 1;
+            newCart = [...cart, selectedProduct];
+        }
+        else {
+            const rest = cart.filter(product => product.id !== selectedProduct.id);
+            exists.quantity = exists.quantity + 1;
+            newCart = [...rest, exists];
+        }
 
-    const handleAddToCart = (product) => {
-        console.log(product);
-        const newCart = [...cart, product]
         setCart(newCart);
+        addToDb(selectedProduct.id);
     }
 
     return (
@@ -31,9 +41,11 @@ const Shop = () => {
                 }
             </div>
             <div className="cart-container">
-                <Cart
-                    cart={cart}
-                ></Cart>
+                <Cart cart={cart}>
+                    <Link to="/orders">
+                        <button>Review Order</button>
+                    </Link>
+                </Cart>
             </div>
         </div>
     );
