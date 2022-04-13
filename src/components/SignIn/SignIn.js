@@ -29,14 +29,14 @@ const SignIn = () => {
     const handleCreateUser = event => {
         event.preventDefault();
         if (password !== confirmPassword) {
-            setError("Your to password is don't match")
+            setError("Your to password is don't match");
             return;
         }
         if (password < 6) {
-            setError("Password must be 6 characters or longer")
+            setError("Password must be 6 characters or longer");
         }
         if (user) {
-            navigate('/')
+            navigate('/');
         }
 
         createUserWithEmailAndPassword(email, password)
